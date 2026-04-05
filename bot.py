@@ -6,6 +6,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from configs import API_ID, API_HASH, USER_SESSION, PORT, URL, SCRAPE_INTERVAL, PING_INTERVAL
 from tamilmv import tmv_scraper
 from search import search_tamilmv
+from skymovies import start_skymovies_scraper
 
 
 User = Client("User", api_id=API_ID, api_hash=API_HASH, session_string=USER_SESSION)
@@ -27,20 +28,14 @@ async def handle_search(client, message):
             await msg.edit_text("No results found.")
             return
 
-        text = "**Top Results:**
-
-"
+        text = "**Top Results:**\n\n"
         for i, res in enumerate(results, 1):
             title = res['title']
             if len(title) > 60:
                 title = title[:57] + "..."
-            text += f"**{i}.** {title}
-"
-            text += f"Size: {res['size']}
-"
-            text += f"Link: {res['link']}
-
-"
+            text += f"**{i}.** {title}\n"
+            text += f"Size: {res['size']}\n"
+            text += f"Link: {res['link']}\n\n"
 
         # Optional: Add inline button for the first result just as an example,
         # or just a general button. But keeping it simple text as requested is safest.
@@ -76,6 +71,7 @@ async def main_loop():
     while True:
         print("🌀 Starting TamilMV scraping...")
         await tmv_scraper(User)
+        await start_skymovies_scraper(User)
         await asyncio.sleep(SCRAPE_INTERVAL)
 
 # ---------- Web server ----------
