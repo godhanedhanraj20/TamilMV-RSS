@@ -3,16 +3,103 @@ from aiohttp import web
 
 from pyrogram import Client, idle, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from config.configs import API_ID, API_HASH, USER_SESSION, PORT, URL, SCRAPE_INTERVAL, PING_INTERVAL
+from config.configs import API_ID, API_HASH, USER_SESSION, PORT, URL, SCRAPE_INTERVAL, PING_INTERVAL, ADMIN_ID
 from scrapers.tamilmv import tmv_scraper
 from scrapers.search import search_tamilmv
 from scrapers.skymovies import start_skymovies_scraper
 
 
+
+# Global State
+bot_paused = False
+
+def is_admin(user_id):
+    return user_id == ADMIN_ID if ADMIN_ID else True  # If no ADMIN_ID set, allow anyone for now (or False, but True for easy testing)
+
 User = Client("User", api_id=API_ID, api_hash=API_HASH, session_string=USER_SESSION)
 
+
+
 # ---------- Bot Handlers ----------
+@User.on_message(filters.command("start"))
+async def start_cmd(client, message):
+    text = (
+        "🤖 **Bot is running**\n\n"
+        "**Admin Commands**\n"
+        "• `/on` — Resume bot scraping loop\n"
+        "• `/off` — Pause bot scraping loop\n"
+        "• `/process <url>` — Process a single URL manually\n"
+        "• `/ping` — Quick check the bot is receiving commands\n\n"
+        "**User Commands**\n"
+        "• `/search <query>` — Search TamilMV titles"
+    )
+    await message.reply_text(text)
+
+@User.on_message(filters.command("ping"))
+async def ping_cmd(client, message):
+    await message.reply_text("pong")
+
+@User.on_message(filters.command("on"))
+async def resume_bot(client, message):
+    global bot_paused
+    if not is_admin(message.from_user.id):
+        await message.reply_text("❌ You are not authorized to use this command.")
+        return
+    bot_paused = False
+    await message.reply_text("▶️ Bot Resumed.")
+
+@User.on_message(filters.command("off"))
+async def pause_bot(client, message):
+    global bot_paused
+    if not is_admin(message.from_user.id):
+        await message.reply_text("❌ You are not authorized to use this command.")
+        return
+    bot_paused = True
+    await message.reply_text("⛔ Bot Paused.")
+
+@User.on_message(filters.command("process"))
+async def process_cmd(client, message):
+    if not is_admin(message.from_user.id):
+        await message.reply_text("❌ You are not authorized to use this command.")
+        return
+    args = message.command
+    if len(args) < 2:
+        await message.reply_text("❌ Correct usage: `/process <details_url>`")
+        return
+
+    input_url = args[1].strip()
+    if not input_url.lower().startswith(("http://", "https://")):
+        input_url = f"https://{input_url}"
+
+    msg = await message.reply_text("ℹ️ Processing, please wait...")
+
+    try:
+        if "skymovies" in input_url.lower():
+            # fetch the page manually and pass to scraper
+            from scrapers.skymovies import fetch_html, scrape_skymovies
+            html_content = await asyncio.to_thread(fetch_html, input_url)
+            if html_content:
+                # false flag means do not skip if already sent (force process)
+                movies = await scrape_skymovies(html_content, client, skip_already_sent=False)
+                if movies:
+                    await msg.edit_text(f"✅ Processed {len(movies)} Skymovies links manually.")
+                else:
+                    await msg.edit_text("❌ No Skymovies details found.")
+            else:
+                await msg.edit_text("❌ Failed to fetch Skymovies page.")
+
+        elif "tamilmv" in input_url.lower():
+            # For tamilmv we need to extract from topic page.
+            # Using search logic or custom block. We'll leave it as a placeholder or basic implement:
+            await msg.edit_text("❌ Manual processing for TamilMV specific topic URLs is not fully supported yet in this command.")
+
+        else:
+            await msg.edit_text("❌ Unsupported URL domain. Try Skymovies links.")
+    except Exception as e:
+        await msg.edit_text(f"❌ Error processing: {e}")
+
 @User.on_message(filters.command("search"))
+
 async def handle_search(client, message):
     if len(message.command) < 2:
         await message.reply_text("Usage: /search <movie or series name>")
@@ -68,10 +155,14 @@ threading.Thread(target=ping_loop, daemon=True).start()
 
 # ---------- TamilMV Scraper Loop ----------
 async def main_loop():
+    global bot_paused
     while True:
-        print("🌀 Starting TamilMV scraping...")
-        await tmv_scraper(User)
-        await start_skymovies_scraper(User)
+        if not bot_paused:
+            print("🌀 Starting scraping loops...")
+            await tmv_scraper(User)
+            await start_skymovies_scraper(User)
+        else:
+            print("⏸ Bot is paused. Skipping scrape cycle.")
         await asyncio.sleep(SCRAPE_INTERVAL)
 
 # ---------- Web server ----------
