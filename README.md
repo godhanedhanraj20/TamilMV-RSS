@@ -42,18 +42,21 @@ This system automates the ingestion and distribution of media content from multi
 
 ### Component-Level Architecture
 
-- `bot.py`: The orchestrator. Initializes the Pyrogram client session, manages the `aiohttp` web server, runs the periodic async scraping loops (`tamilmv` & `skymovies`), handles interactive commands like `/search`, and manages the keep-alive ping thread.
-- `tamilmv.py`: The torrent pipeline engine. Parses DOM structures, downloads `.torrent` files, and dispatches them via Telegram.
-- `skymovies.py`: The streaming pipeline engine. Extracts multi-host direct download links (GoFile, Streamtape, etc.), groups them logically, and constructs structured Telegram posts.
-- `search.py`: The standalone query engine. Enables non-blocking, on-demand searches against TamilMV.
-- `database.py`: The deduplication layer. Manages the connection pool to MongoDB and exposes primitives for tracking state across the `Tamilmv` and `Skymovies` collections.
-- `configs.py`: The configuration layer. Maps process environment variables to typed Python constants utilized across the system.
+The project follows a modular, package-based directory structure:
+
+- `bot.py` (Root): The orchestrator. Initializes the Pyrogram client session, manages the `aiohttp` web server, runs the periodic async scraping loops (`tamilmv` & `skymovies`), handles interactive commands like `/search`, and manages the keep-alive ping thread.
+- `scrapers/tamilmv.py`: The torrent pipeline engine. Parses DOM structures, downloads `.torrent` files, and dispatches them via Telegram.
+- `scrapers/skymovies.py`: The streaming pipeline engine. Extracts multi-host direct download links (GoFile, Streamtape, etc.), groups them logically, and constructs structured Telegram posts.
+- `scrapers/search.py`: The standalone query engine. Enables non-blocking, on-demand searches against TamilMV.
+- `database/database.py`: The deduplication layer. Manages the connection pool to MongoDB and exposes primitives for tracking state across the `Tamilmv` and `Skymovies` collections.
+- `config/configs.py`: The configuration layer. Maps process environment variables to typed Python constants utilized across the system.
+- `tests/`: Contains the complete `pytest` suite for unit and integration testing.
 
 ## 4. Execution Timeline
 
 ### Startup Phase
-1. Load config: `configs.py` parses variables from `.env` or the environment.
-2. Connect MongoDB: `database.py` initializes the AsyncIOMotorClient connection.
+1. Load config: `config/configs.py` parses variables from `.env` or the environment.
+2. Connect MongoDB: `database/database.py` initializes the AsyncIOMotorClient connection.
 3. Initialize Telegram client: `bot.py` creates the Pyrogram client using the provided V2 string session.
 4. Start web server: `bot.py` binds the `aiohttp` application to the specified `$PORT`.
 
