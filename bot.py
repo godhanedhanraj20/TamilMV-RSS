@@ -3,10 +3,10 @@ from aiohttp import web
 
 from pyrogram import Client, idle, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from configs import API_ID, API_HASH, USER_SESSION, PORT, URL, SCRAPE_INTERVAL, PING_INTERVAL
-from tamilmv import tmv_scraper
-from search import search_tamilmv
-from skymovies import start_skymovies_scraper
+from config.configs import API_ID, API_HASH, USER_SESSION, PORT, URL, SCRAPE_INTERVAL, PING_INTERVAL
+from scrapers.tamilmv import tmv_scraper
+from scrapers.search import search_tamilmv
+from scrapers.skymovies import start_skymovies_scraper
 
 
 User = Client("User", api_id=API_ID, api_hash=API_HASH, session_string=USER_SESSION)

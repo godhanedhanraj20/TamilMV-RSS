@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch, MagicMock, AsyncMock
-import skymovies
+import scrapers.skymovies as skymovies
 from pyrogram import Client
 
 @pytest.mark.asyncio
@@ -45,10 +45,10 @@ async def test_skymovies_integration_flow():
     mock_client.send_message = AsyncMock()
 
     # 3. Mock Database
-    with patch('skymovies.fetch_html', side_effect=mock_fetch_html), \
-         patch('skymovies.extract_host_links_from_howblogs', side_effect=mock_extract_host_links), \
-         patch('skymovies.already_sent', new_callable=AsyncMock) as mock_already_sent, \
-         patch('skymovies.mark_as_sent', new_callable=AsyncMock) as mock_mark_as_sent:
+    with patch('scrapers.skymovies.fetch_html', side_effect=mock_fetch_html), \
+         patch('scrapers.skymovies.extract_host_links_from_howblogs', side_effect=mock_extract_host_links), \
+         patch('scrapers.skymovies.already_sent', new_callable=AsyncMock) as mock_already_sent, \
+         patch('scrapers.skymovies.mark_as_sent', new_callable=AsyncMock) as mock_mark_as_sent:
 
         # Assume movie not sent yet
         mock_already_sent.return_value = False
@@ -57,7 +57,7 @@ async def test_skymovies_integration_flow():
         main_html = mock_fetch_html("https://skymovieshd.credit/")
 
         # Override the SKYMOVIES_CHANNEL_ID in skymovies module for testing
-        with patch('skymovies.SKYMOVIES_CHANNEL_ID', -100123):
+        with patch('scrapers.skymovies.SKYMOVIES_CHANNEL_ID', -100123):
             results = await skymovies.scrape_skymovies(main_html, mock_client, skip_already_sent=True)
 
         # Assertions

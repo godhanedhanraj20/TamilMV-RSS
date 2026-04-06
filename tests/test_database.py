@@ -1,11 +1,11 @@
 import pytest
 from unittest.mock import patch, MagicMock, AsyncMock
-import database
+import database.database as database
 
 @pytest.mark.asyncio
 async def test_already_sent():
     # Mock skymovies_collection
-    with patch('database.skymovies_collection.find_one', new_callable=AsyncMock) as mock_find_one:
+    with patch('database.database.skymovies_collection.find_one', new_callable=AsyncMock) as mock_find_one:
         mock_find_one.return_value = {"detail_url": "test_url"}
 
         result = await database.already_sent("test_url")
@@ -18,7 +18,7 @@ async def test_already_sent():
 
 @pytest.mark.asyncio
 async def test_mark_as_sent():
-    with patch('database.skymovies_collection.insert_one', new_callable=AsyncMock) as mock_insert_one:
+    with patch('database.database.skymovies_collection.insert_one', new_callable=AsyncMock) as mock_insert_one:
         await database.mark_as_sent("url", "title", "size", 12345, [], [], "list_title")
         mock_insert_one.assert_called_once()
         args, _ = mock_insert_one.call_args
@@ -34,7 +34,7 @@ async def test_mark_as_sent():
 
 @pytest.mark.asyncio
 async def test_is_tmv_exist():
-    with patch('database.tmv_collection.find_one', new_callable=AsyncMock) as mock_find_one:
+    with patch('database.database.tmv_collection.find_one', new_callable=AsyncMock) as mock_find_one:
         mock_find_one.return_value = {"file_url": "test_url"}
 
         result = await database.is_tmv_exist("test_url")
@@ -43,8 +43,8 @@ async def test_is_tmv_exist():
 
 @pytest.mark.asyncio
 async def test_add_tmv_new():
-    with patch('database.tmv_collection.find_one', new_callable=AsyncMock) as mock_find_one, \
-         patch('database.tmv_collection.insert_one', new_callable=AsyncMock) as mock_insert_one:
+    with patch('database.database.tmv_collection.find_one', new_callable=AsyncMock) as mock_find_one, \
+         patch('database.database.tmv_collection.insert_one', new_callable=AsyncMock) as mock_insert_one:
 
         mock_find_one.return_value = None
 
@@ -62,8 +62,8 @@ async def test_add_tmv_new():
 
 @pytest.mark.asyncio
 async def test_add_tmv_existing():
-    with patch('database.tmv_collection.find_one', new_callable=AsyncMock) as mock_find_one, \
-         patch('database.tmv_collection.insert_one', new_callable=AsyncMock) as mock_insert_one:
+    with patch('database.database.tmv_collection.find_one', new_callable=AsyncMock) as mock_find_one, \
+         patch('database.database.tmv_collection.insert_one', new_callable=AsyncMock) as mock_insert_one:
 
         mock_find_one.return_value = {"file_url": "http://file"}
 

@@ -1,7 +1,7 @@
 import re
 import datetime
 import motor.motor_asyncio
-from configs import DATABASE_URL, DATABASE_NAME
+from config.configs import DATABASE_URL, DATABASE_NAME
 
 # ---------- MongoDB Setup ----------
 client = motor.motor_asyncio.AsyncIOMotorClient(DATABASE_URL)
@@ -15,14 +15,14 @@ async def add_tmv(file_name: str, file_url: str, magnet: str, size_mb: float = 0
     """
     try:
         exists = await tmv_collection.find_one({"file_url": file_url})
-        
+
         if not exists:
             await tmv_collection.insert_one({
                 "file_name": file_name,
                 "file_url": file_url,
                 "magnet": magnet,
                 "size_mb": size_mb,
-                "category": category, 
+                "category": category,
                 "upload_date": datetime.date.today().isoformat()
             })
             print(f"💾 Added to DB [{category}]: {file_name}")

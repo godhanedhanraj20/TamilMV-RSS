@@ -1,9 +1,9 @@
 import pytest
 from unittest.mock import patch, MagicMock
-import search
+import scrapers.search as search
 
 @pytest.mark.asyncio
-@patch('search.cloudscraper.create_scraper')
+@patch('scrapers.search.cloudscraper.create_scraper')
 async def test_search_tamilmv(mock_create_scraper):
     mock_scraper = MagicMock()
     mock_response = MagicMock()
@@ -31,7 +31,7 @@ async def test_search_tamilmv(mock_create_scraper):
     assert results[1]["link"] == "https://www.1tamilmv.land/index.php?/forums/topic/456"
 
 @pytest.mark.asyncio
-@patch('search.cloudscraper.create_scraper')
+@patch('scrapers.search.cloudscraper.create_scraper')
 async def test_search_tamilmv_empty(mock_create_scraper):
     mock_scraper = MagicMock()
     mock_response = MagicMock()

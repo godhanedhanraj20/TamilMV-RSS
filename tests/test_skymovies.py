@@ -1,6 +1,6 @@
 import pytest
 from bs4 import BeautifulSoup
-import skymovies
+import scrapers.skymovies as skymovies
 from unittest.mock import patch, MagicMock, AsyncMock
 
 def test_extract_movie_info():
@@ -54,7 +54,7 @@ def test_extract_all_howblogs_links():
     assert "https://howblogs.xyz/1" in links
     assert "https://howblogs.xyz/4" in links
 
-@patch('skymovies.cloudscraper.create_scraper')
+@patch('scrapers.skymovies.cloudscraper.create_scraper')
 def test_extract_host_links_from_howblogs(mock_create_scraper):
     mock_scraper = MagicMock()
     mock_response = MagicMock()

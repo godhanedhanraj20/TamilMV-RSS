@@ -32,17 +32,6 @@ PING_INTERVAL = int(os.getenv("PING_INTERVAL", "120"))
 SCRAPE_INTERVAL = int(os.getenv("SCRAPE_INTERVAL", "300"))  # 5 min
 SIZE_LIMIT_GB = int(os.getenv("SIZE_LIMIT_GB", 50))  # Default: 50 GB
 
-
-# Skymovies settings
-SKYMOVIES_CHANNEL_ID = int(os.getenv("SKYMOVIES_CHANNEL_ID", "0"))
-SKYMOVIES_URL = os.getenv("SKYMOVIES_URL", "https://skymovieshd.credit/")
-
-
-# Skymovies settings
-SKYMOVIES_CHANNEL_ID = int(os.getenv("SKYMOVIES_CHANNEL_ID", "0"))
-SKYMOVIES_URL = os.getenv("SKYMOVIES_URL", "https://skymovieshd.credit/")
-
-
 # Skymovies settings
 SKYMOVIES_CHANNEL_ID = int(os.getenv("SKYMOVIES_CHANNEL_ID", "0"))
 SKYMOVIES_URL = os.getenv("SKYMOVIES_URL", "https://skymovieshd.credit/")

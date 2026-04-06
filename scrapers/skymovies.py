@@ -5,8 +5,8 @@ import logging
 import time
 import asyncio
 import cloudscraper
-from configs import SKYMOVIES_CHANNEL_ID, SKYMOVIES_URL
-from database import already_sent, mark_as_sent
+from config.configs import SKYMOVIES_CHANNEL_ID, SKYMOVIES_URL
+from database.database import already_sent, mark_as_sent
 
 logger = logging.getLogger(__name__)
 

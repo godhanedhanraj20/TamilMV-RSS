@@ -7,8 +7,8 @@ import cloudscraper
 from pyrogram import Client
 from bs4 import BeautifulSoup
 from urllib.parse import unquote, urljoin
-from database import tmv_collection, add_tmv 
-from configs import TMV_URL, BOT_TAG, TMV_TORRENT, TMV_LEECH_GRP, TMV_MIRROR_GRP, TMV_TORRENT_THUMB, SIZE_LIMIT_GB
+from database.database import tmv_collection, add_tmv
+from config.configs import TMV_URL, BOT_TAG, TMV_TORRENT, TMV_LEECH_GRP, TMV_MIRROR_GRP, TMV_TORRENT_THUMB, SIZE_LIMIT_GB
 
 # ================= Thumbnail Setup =================
 tmvthumb_path = "/tmp/tmv_torrent_thumb.jpg"

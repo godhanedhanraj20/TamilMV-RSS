@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch, MagicMock, AsyncMock
-import tamilmv
+import scrapers.tamilmv as tamilmv
 from pyrogram import Client
 import os
 
@@ -46,18 +46,18 @@ async def test_tamilmv_integration_flow():
     mock_client.send_message = AsyncMock()
 
     # 3. Apply Patches
-    with patch('tamilmv.cloudscraper.create_scraper', return_value=mock_scraper), \
-         patch('tamilmv.tmv_collection.find_one', new_callable=AsyncMock) as mock_find_one, \
-         patch('tamilmv.tmv_collection.insert_one', new_callable=AsyncMock) as mock_insert_one, \
-         patch('tamilmv.asyncio.sleep', new_callable=AsyncMock): # disable sleep to run fast
+    with patch('scrapers.tamilmv.cloudscraper.create_scraper', return_value=mock_scraper), \
+         patch('scrapers.tamilmv.tmv_collection.find_one', new_callable=AsyncMock) as mock_find_one, \
+         patch('scrapers.tamilmv.tmv_collection.insert_one', new_callable=AsyncMock) as mock_insert_one, \
+         patch('scrapers.tamilmv.asyncio.sleep', new_callable=AsyncMock): # disable sleep to run fast
 
         # Simulate db check: not exists
         mock_find_one.return_value = None
 
         # Execute
-        with patch('tamilmv.TMV_TORRENT', -1001), \
-             patch('tamilmv.TMV_LEECH_GRP', -1002), \
-             patch('tamilmv.TMV_MIRROR_GRP', -1003):
+        with patch('scrapers.tamilmv.TMV_TORRENT', -1001), \
+             patch('scrapers.tamilmv.TMV_LEECH_GRP', -1002), \
+             patch('scrapers.tamilmv.TMV_MIRROR_GRP', -1003):
             await tamilmv.tmv_scraper(mock_client)
 
         # Assertions

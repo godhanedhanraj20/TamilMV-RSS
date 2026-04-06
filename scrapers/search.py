@@ -3,7 +3,7 @@ import asyncio
 import urllib.parse
 import cloudscraper
 from bs4 import BeautifulSoup
-from configs import TMV_URL
+from config.configs import TMV_URL
 
 def _sync_search(query: str) -> list:
     scraper = cloudscraper.create_scraper()
